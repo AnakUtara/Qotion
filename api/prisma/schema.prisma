@@ -1,0 +1,62 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  password  String
+  notes     Note[]
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("users")
+}
+
+model Note {
+  id           Int      @id @default(autoincrement())
+  title        String
+  thumbnailUrl String?  @map("thumbnail_url")
+  content      Json
+  authorId     Int      @map("author_id")
+  author       User     @relation(fields: [authorId], references: [id])
+  // categories PostCategory[]
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  @@map("notes")
+}
+
+// For future use, if we want to add categories to notes, we can use the following models:
+// model Category {
+//   id        Int            @id @default(autoincrement())
+//   name      String         @unique
+//   notes     NoteCategory[]
+//   createdAt DateTime       @default(now()) @map("created_at")
+//   updatedAt DateTime       @updatedAt @map("updated_at")
+
+//   @@map("categories")
+// }
+
+// model NoteCategory {
+//   noteId     Int      @map("note_id")
+//   categoryId Int      @map("category_id")
+//   note       Note     @relation(fields: [noteId], references: [id])
+//   category   Category @relation(fields: [categoryId], references: [id])
+//   createdAt  DateTime @default(now()) @map("created_at")
+//   updatedAt  DateTime @updatedAt @map("updated_at")
+
+//   @@id([noteId, categoryId])
+//   @@map("note_categories")
+// }

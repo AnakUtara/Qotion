@@ -1,0 +1,25 @@
+import { NextFunction, Request, Response } from "express";
+import app, { PORT } from "./config/app.config";
+import AppError from "./errors/app.error";
+import apiRoute from "./routers/api.router";
+
+// * Prefix all routes with /api
+app.use("/api", apiRoute);
+
+// * 404 Handler
+app.use((_: Request, res: Response) => {
+	console.error("404 Not Found");
+	return res.status(404).send({ message: "Not Found" });
+});
+
+// * Global Error Handler
+app.use((error: AppError, _: Request, res: Response, __: NextFunction) => {
+	console.table({ errorStatus: error.status, errorMessage: error.message });
+	return res.status(error.status || 500).send({
+		status: error.status || 500,
+		message: error.message || "Internal Server Error",
+	});
+});
+
+// * Start the server
+app.listen(PORT, () => console.log(`Server is running on PORT: ${PORT}`));
