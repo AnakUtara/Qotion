@@ -14,7 +14,7 @@ app.use((_: Request, res: Response) => {
 
 // * Global Error Handler
 app.use((error: AppError, _: Request, res: Response, __: NextFunction) => {
-	console.table({ errorStatus: error.status, errorMessage: error.message });
+	console.table(error);
 	return res.status(error.status || 500).send({
 		status: error.status || 500,
 		message: error.message || "Internal Server Error",

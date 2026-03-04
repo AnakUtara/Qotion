@@ -13,7 +13,7 @@ class AuthController {
 		try {
 			const { email, password } = req.body;
 
-			const validAuth = await authSchema.validate({
+			const validAuth = await authSchema.parseAsync({
 				email,
 				password,
 			});
@@ -87,7 +87,7 @@ class AuthController {
 		}
 	};
 
-	logout = async (req: Request, res: Response, next: NextFunction) => {
+	logout = async (_req: Request, res: Response, next: NextFunction) => {
 		try {
 			res.clearCookie("refresh-token");
 			return res.send(responseBuilder(200, "Logout successful", null));

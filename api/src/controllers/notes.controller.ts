@@ -3,30 +3,30 @@ import { responseBuilder } from "../utils/response.builder";
 import AppError from "../errors/app.error";
 import { prisma } from "../libs/prisma.client";
 import { appErrorHandler } from "../errors/handlers/app.error.handler";
-import { Post } from "../generated/prisma";
-import { TPost } from "../models/notes.model";
 import {
-	createPostSchema,
-	updatePostSchema,
-} from "../validations/posts.validation";
+	createNoteSchema,
+	updateNoteSchema,
+} from "../validations/notes.validation";
+import { Note } from "../generated/prisma/client";
+import { NoteCreateInput, NoteUpdateInput } from "../generated/prisma/models";
 
 class NotesController {
 	getNotes = async (req: Request, res: Response, next: NextFunction) => {
 		try {
 			const { search } = req.query;
-			const posts: Post[] = await prisma.post.findMany({
+			const notes: Note[] = await prisma.note.findMany({
 				where: !search
 					? {}
 					: {
 							title: { contains: String(search), mode: "insensitive" },
 						},
 			});
-			if (!posts || posts.length === 0) {
+			if (!notes || notes.length === 0) {
 				return res
 					.status(404)
-					.send(responseBuilder(404, "No posts found", null));
+					.send(responseBuilder(404, "No notes found", null));
 			}
-			return res.send(responseBuilder(200, "Success!", posts));
+			return res.send(responseBuilder(200, "Success!", notes));
 		} catch (error) {
 			appErrorHandler(error, next);
 		}
@@ -35,14 +35,17 @@ class NotesController {
 	getNoteById = async (req: Request, res: Response, next: NextFunction) => {
 		try {
 			const { id } = req.params;
-			const note: TPost = await prisma.post.findFirst({
+
+			const note: Note | null = await prisma.note.findFirst({
 				where: { id: Number(id) },
 			});
+
 			if (!note) {
 				return res
 					.status(404)
 					.send(responseBuilder(404, `Note ID: ${id} not found`, null));
 			}
+
 			return res.send(responseBuilder(200, "Success!", note));
 		} catch (error: Error | any) {
 			appErrorHandler(error, next);
@@ -51,13 +54,16 @@ class NotesController {
 
 	createNote = async (req: Request, res: Response, next: NextFunction) => {
 		try {
-			const submittedNote: Post = req.body;
+			const submittedNote: NoteCreateInput = req.body;
+
 			if (!req.body) throw new AppError("Request body is missing", 400);
-			const validNewNote = await createPostSchema.validate(submittedNote);
-			const newNote: Post = await prisma.post.create({
+
+			const validNewNote = await createNoteSchema.parseAsync(submittedNote);
+
+			const newNote: Note = await prisma.note.create({
 				data: {
 					...validNewNote,
-					userId: req.user!.id,
+					authorId: req.user!.id,
 				},
 			});
 			return res
@@ -71,32 +77,37 @@ class NotesController {
 	updateNote = async (req: Request, res: Response, next: NextFunction) => {
 		try {
 			const { id } = req.params;
-			const submittedNote: Post = req.body;
+
+			const submittedNote: NoteUpdateInput = req.body;
+
 			if (!req.body) throw new AppError("Request body is missing", 400);
-			const updatedNote: TPost = await prisma.$transaction(
-				async (tx): Promise<TPost> => {
-					const existingNote: TPost = await tx.post.findFirst({
+
+			const updatedNote: Note = await prisma.$transaction(
+				async (tx): Promise<Note> => {
+					const existingNote: Note | null = await tx.note.findFirst({
 						where: { id: Number(id) },
 					});
+
 					if (!existingNote) {
 						throw new AppError(`Note ID: ${id} not found`, 404);
 					}
-					const validatedUpdateNote = await updatePostSchema.validate({
+
+					const validatedUpdateNote = await updateNoteSchema.parseAsync({
 						...submittedNote,
-						userId: existingNote.userId,
+						authorId: existingNote.authorId,
 					});
-					return await tx.post.update({
+
+					return await tx.note.update({
 						where: { id: Number(id) },
 						data: {
 							...existingNote,
 							title: validatedUpdateNote.title || existingNote.title,
-							content: validatedUpdateNote.content || existingNote.content,
-							publishedAt:
-								validatedUpdateNote.publishedAt || existingNote.publishedAt,
+							content: validatedUpdateNote.content || existingNote.content!,
 						},
 					});
 				},
 			);
+
 			return res.send(
 				responseBuilder(200, "Note updated successfully", updatedNote),
 			);
@@ -108,11 +119,11 @@ class NotesController {
 	deleteNote = async (req: Request, res: Response, next: NextFunction) => {
 		try {
 			const { id } = req.params;
-			await prisma.post.delete({ where: { id: Number(id) } });
+			await prisma.note.delete({ where: { id: Number(id) } });
 			return res.send(
 				responseBuilder(200, `Note ID: ${id} deleted successfully`, null),
 			);
-		} catch (error) {
+		} catch (error: Error | any) {
 			appErrorHandler(error, next);
 		}
 	};
