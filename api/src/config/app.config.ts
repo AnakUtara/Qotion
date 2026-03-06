@@ -1,6 +1,7 @@
 import express, { Application, CookieOptions } from "express";
-import { appPort, isProduction } from "./env.config";
+import { appPort, clientOrigin, isProduction } from "./env.config";
 import cors from "cors";
+import cookieParser from "cookie-parser";
 
 const app: Application = express();
 const PORT = appPort;
@@ -8,9 +9,10 @@ const PORT = appPort;
 //Middleware Configuration
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
 app.use(
 	cors({
-		origin: "http://localhost:5173", // Next.js dev server
+		origin: clientOrigin, // Next.js dev server
 		credentials: true, // if you need to send cookies
 	}),
 );

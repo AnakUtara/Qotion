@@ -7,6 +7,7 @@ import { responseBuilder } from "../utils/response.builder";
 import { authSchema } from "../validations/auth.validation";
 import AppError from "../errors/app.error";
 import { cookieConfig } from "../config/app.config";
+import { User } from "../generated/prisma/client";
 
 class AuthController {
 	register = async (req: Request, res: Response, next: NextFunction) => {
@@ -120,18 +121,21 @@ class AuthController {
 
 	refreshToken = async (req: Request, res: Response, next: NextFunction) => {
 		try {
-			const token = req.cookies["refresh-token"]; // read from httpOnly cookie instead
+			if (!req.user) throw new AppError("User not authenticated", 401);
 
-			if (!token) throw new AppError("Refresh token missing", 401);
+			const { id, email } = req.user as User;
 
-			const decoded = token ? verifyJWT(token, "refresh") : null;
+			const user = await prisma.user.findUnique({
+				where: { id },
+				select: {
+					id: true,
+					email: true,
+					createdAt: true,
+					updatedAt: true,
+				},
+			});
 
-			if (!decoded) throw new AppError("Invalid token", 403);
-
-			const { id, email } = decoded as {
-				id: number;
-				email: string;
-			};
+			if (!user) throw new AppError("User not found", 404);
 
 			const newAccessToken = generateJWT({ id, email });
 			const newRefreshToken = generateJWT({ id, email }, "refresh");
@@ -140,6 +144,7 @@ class AuthController {
 
 			return res.cookie("refresh-token", newRefreshToken, cookieConfig).send(
 				responseBuilder(200, "Token refreshed successfully", {
+					user,
 					accessToken: newAccessToken,
 				}),
 			);

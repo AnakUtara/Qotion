@@ -6,7 +6,19 @@ import { ZodError } from "zod/v4";
 
 export const appErrorHandler = (error: Error | any, next: NextFunction) => {
 	if (error instanceof Prisma.PrismaClientKnownRequestError) {
-		return next(new AppError(error.message, 400, error));
+		switch (error.code) {
+			case "P2002":
+				return next(new AppError("Already exists", 409, error));
+			case "P2025":
+				return next(new AppError("Record not found", 404, error));
+			default:
+				return next(new AppError("Database error", 400, error));
+		}
+	}
+	if (error instanceof Prisma.PrismaClientValidationError) {
+		return next(
+			new AppError("Data not found/Invalid data provided", 400, error),
+		);
 	}
 	if (error instanceof ZodError) {
 		const messages = error.issues

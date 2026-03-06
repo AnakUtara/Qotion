@@ -40,7 +40,7 @@ export const uniqueUserGuard = async (
 // 	}
 // };
 
-export const verifyToken = async (
+export const verifyAccessToken = async (
 	req: Request,
 	_: Response,
 	next: NextFunction,
@@ -52,6 +52,23 @@ export const verifyToken = async (
 		if (!token) throw new AppError("Token missing", 401);
 		const decoded = verifyJWT(token);
 		if (!decoded) throw new AppError("Invalid token", 403);
+		req.user = decoded as User;
+		next();
+	} catch (error) {
+		appErrorHandler(error, next);
+	}
+};
+
+export const verifyRefreshToken = async (
+	req: Request,
+	_: Response,
+	next: NextFunction,
+) => {
+	try {
+		const refreshToken = req.cookies["refresh-token"];
+		if (!refreshToken) throw new AppError("Refresh token missing", 401);
+		const decoded = verifyJWT(refreshToken, "refresh");
+		if (!decoded) throw new AppError("Invalid refresh token", 403);
 		req.user = decoded as User;
 		next();
 	} catch (error) {

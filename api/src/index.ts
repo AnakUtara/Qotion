@@ -18,6 +18,7 @@ app.use((error: AppError, _: Request, res: Response, __: NextFunction) => {
 	return res.status(error.status || 500).send({
 		status: error.status || 500,
 		message: error.message || "Internal Server Error",
+		error: error.object || null,
 	});
 });
 
