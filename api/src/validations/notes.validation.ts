@@ -22,12 +22,8 @@ const sharedNotesSchema = {
 		.string()
 		.trim()
 		.min(2, "Title must be at least 2 characters")
-		.max(100, "Title must be at most 100 characters"),
+		.max(500, "Title must be at most 500 characters"),
 	content: blockNoteDocSchema,
-	authorId: z
-		.number()
-		.positive("Author ID must be a positive number")
-		.int("Author ID must be an integer"),
 };
 
 export const createNoteSchema = z.object({

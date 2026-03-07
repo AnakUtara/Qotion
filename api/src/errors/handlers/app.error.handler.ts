@@ -3,8 +3,15 @@ import AppError from "../app.error";
 import { Prisma } from "../../generated/prisma/client";
 import { $ZodIssue } from "zod/v4/core";
 import { ZodError } from "zod/v4";
+import { JsonWebTokenError, TokenExpiredError } from "jsonwebtoken";
 
 export const appErrorHandler = (error: Error | any, next: NextFunction) => {
+	if (error instanceof TokenExpiredError) {
+		return next(new AppError("Token expired", 401, error));
+	}
+	if (error instanceof JsonWebTokenError) {
+		return next(new AppError("Invalid token", 401, error));
+	}
 	if (error instanceof Prisma.PrismaClientKnownRequestError) {
 		switch (error.code) {
 			case "P2002":

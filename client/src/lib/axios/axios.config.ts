@@ -40,9 +40,9 @@ const axiosInstance = () => {
 			if (error.response?.status === 401 && !originalRequest._retry) {
 				originalRequest._retry = true;
 				const data = await refreshToken();
-				if (data && data.accessToken) {
-					setAccessToken(data.accessToken);
-					originalRequest.headers.Authorization = `Bearer ${data.accessToken}`;
+				if (data && data.data?.accessToken) {
+					setAccessToken(data.data?.accessToken);
+					originalRequest.headers.Authorization = `Bearer ${data.data?.accessToken}`;
 					return instance(originalRequest);
 				}
 			}

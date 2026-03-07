@@ -1,4 +1,5 @@
 import BlocknoteEditorView from "@/components/blocknote/editor.view";
+import NotePage from "@/pages/notes/note.page";
 import type IRoute from "@/models/route.model";
 
 const protectedRoutes: IRoute[] = [
@@ -8,12 +9,8 @@ const protectedRoutes: IRoute[] = [
 		element: <BlocknoteEditorView />,
 	},
 	{
-		path: "gallery",
-		element: <div>Gallery</div>,
-	},
-	{
-		path: "profile",
-		element: <div>Profile</div>,
+		path: ":id",
+		element: <NotePage />,
 	},
 ];
 

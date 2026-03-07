@@ -15,11 +15,15 @@ class NotesController {
 		try {
 			const { search } = req.query;
 			const notes: Note[] = await prisma.note.findMany({
-				where: !search
-					? {}
-					: {
-							title: { contains: String(search), mode: "insensitive" },
-						},
+				where: {
+					...(!search
+						? {}
+						: {
+								title: { contains: String(search), mode: "insensitive" },
+							}),
+					authorId: req.user!.id,
+				},
+				orderBy: { createdAt: "desc" },
 			});
 			if (!notes || notes.length === 0) {
 				return res
@@ -37,7 +41,7 @@ class NotesController {
 			const { id } = req.params;
 
 			const note: Note | null = await prisma.note.findFirst({
-				where: { id: Number(id) },
+				where: { id: Number(id), authorId: req.user!.id },
 			});
 
 			if (!note) {
@@ -85,7 +89,7 @@ class NotesController {
 			const updatedNote: Note = await prisma.$transaction(
 				async (tx): Promise<Note> => {
 					const existingNote: Note | null = await tx.note.findFirst({
-						where: { id: Number(id) },
+						where: { id: Number(id), authorId: req.user!.id },
 					});
 
 					if (!existingNote) {
@@ -98,7 +102,7 @@ class NotesController {
 					});
 
 					return await tx.note.update({
-						where: { id: Number(id) },
+						where: { id: Number(id), authorId: req.user!.id },
 						data: {
 							...existingNote,
 							title: validatedUpdateNote.title || existingNote.title,
@@ -119,7 +123,9 @@ class NotesController {
 	deleteNote = async (req: Request, res: Response, next: NextFunction) => {
 		try {
 			const { id } = req.params;
-			await prisma.note.delete({ where: { id: Number(id) } });
+			await prisma.note.delete({
+				where: { id: Number(id), authorId: req.user!.id },
+			});
 			return res.send(
 				responseBuilder(200, `Note ID: ${id} deleted successfully`, null),
 			);
