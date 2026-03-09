@@ -1,12 +1,32 @@
 import express, { Router } from "express";
 import notesController from "../controllers/notes.controller";
-import { verifyToken } from "../middlewares/auth.middleware";
+import { verifyAccessToken } from "../middlewares/auth.middleware";
+import {
+	noteCreationRateLimiter,
+	noteDeletionRateLimiter,
+	noteUpdateRateLimiter,
+} from "../middlewares/rate-limiter.middleware";
 
 export const notesRouter: Router = express.Router();
 
 // * Note Resources
-notesRouter.get("/", verifyToken, notesController.getNotes);
-notesRouter.post("/", verifyToken, notesController.createNote);
-notesRouter.get("/:id", verifyToken, notesController.getNoteById);
-notesRouter.put("/:id", verifyToken, notesController.updateNote);
-notesRouter.delete("/:id", verifyToken, notesController.deleteNote);
+notesRouter.get("/", verifyAccessToken, notesController.getNotes);
+notesRouter.post(
+	"/",
+	verifyAccessToken,
+	noteCreationRateLimiter,
+	notesController.createNote,
+);
+notesRouter.get("/:id", verifyAccessToken, notesController.getNoteById);
+notesRouter.put(
+	"/:id",
+	verifyAccessToken,
+	noteUpdateRateLimiter,
+	notesController.updateNote,
+);
+notesRouter.delete(
+	"/:id",
+	verifyAccessToken,
+	noteDeletionRateLimiter,
+	notesController.deleteNote,
+);
