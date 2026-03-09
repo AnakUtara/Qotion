@@ -10,7 +10,11 @@ const NotePage = () => {
 	if (isLoading) return <LoadingScreen />;
 
 	return (
-		<BlocknoteEditorView initialContent={note?.content} noteId={note?.id} />
+		<BlocknoteEditorView
+			key={note?.id}
+			initialContent={note?.content}
+			noteId={note?.id}
+		/>
 	);
 };
 

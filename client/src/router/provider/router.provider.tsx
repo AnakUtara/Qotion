@@ -20,7 +20,7 @@ const RouterProvider = () => {
 							<Route key={route.path} {...route} />
 						))}
 					</Route>
-					<Route path="/dashboard" element={<ProtectedLayout />}>
+					<Route path="/notes" element={<ProtectedLayout />}>
 						{protectedRoutes.map((route: IRoute) => (
 							<Route key={route.path} {...route} />
 						))}

@@ -7,6 +7,7 @@ const app: Application = express();
 const PORT = appPort;
 
 //Middleware Configuration
+app.set("trust proxy", 1); // Trust first proxy (if behind a reverse proxy like Nginx or Heroku)
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());

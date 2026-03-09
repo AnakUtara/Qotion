@@ -36,7 +36,7 @@ export function LoginForm({ className, ...props }: ComponentProps<"form">) {
 		try {
 			await signIn(email, password);
 			toast.success("Welcome! You have logged in successfully!");
-			navigator("/dashboard");
+			navigator("/notes");
 		} catch (error) {
 			toast.error(
 				error instanceof AxiosError && error.response?.data?.message

@@ -9,7 +9,7 @@ const AuthLayout = () => {
 
 	if (isLoading) return <LoadingScreen />;
 
-	if (user) return <Navigate to="/dashboard" replace />;
+	if (user) return <Navigate to="/notes" replace />;
 
 	return (
 		<div className="grid min-h-svh lg:grid-cols-2">
