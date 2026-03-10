@@ -1,8 +1,8 @@
 import express, { Router } from "express";
-import { appName } from "../config/env.config";
-import { notesRouter } from "../resources/notes.resource";
-import { authRouter } from "../resources/auth.resource";
-import { cloudinaryStorageRouter } from "../resources/cloudinary.storage.resource";
+import { appName } from "../config/env.config.js";
+import { notesRouter } from "../resources/notes.resource.js";
+import { authRouter } from "../resources/auth.resource.js";
+import { cloudinaryStorageRouter } from "../resources/cloudinary.storage.resource.js";
 
 const apiRouter: Router = express.Router();
 

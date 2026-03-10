@@ -1,7 +1,7 @@
-import { NextFunction, Request, Response } from "express";
-import app, { PORT } from "./config/app.config";
-import AppError from "./errors/app.error";
-import apiRoute from "./routers/api.router";
+import type { NextFunction, Request, Response } from "express";
+import app, { PORT } from "./config/app.config.js";
+import AppError from "./errors/app.error.js";
+import apiRoute from "./routers/api.router.js";
 
 // * Prefix all routes with /api
 app.use("/api", apiRoute);

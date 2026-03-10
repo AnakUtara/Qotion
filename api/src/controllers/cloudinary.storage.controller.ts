@@ -1,8 +1,8 @@
-import { NextFunction, Request, Response } from "express";
+import type { NextFunction, Request, Response } from "express";
 import { Readable } from "stream";
-import AppError from "../errors/app.error";
-import { responseBuilder } from "../utils/response.builder";
-import cloudinary from "../libs/cloudinary";
+import AppError from "../errors/app.error.js";
+import { responseBuilder } from "../utils/response.builder.js";
+import cloudinary from "../libs/cloudinary.js";
 import path from "path";
 
 class CloudinaryStorageController {

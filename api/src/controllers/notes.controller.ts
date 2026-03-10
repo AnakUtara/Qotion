@@ -1,14 +1,17 @@
-import { NextFunction, Request, Response } from "express";
-import { responseBuilder } from "../utils/response.builder";
-import AppError from "../errors/app.error";
-import { prisma } from "../libs/prisma.client";
-import { appErrorHandler } from "../errors/handlers/app.error.handler";
+import type { NextFunction, Request, Response } from "express";
+import { responseBuilder } from "../utils/response.builder.js";
+import AppError from "../errors/app.error.js";
+import { prisma } from "../libs/prisma.client.js";
+import { appErrorHandler } from "../errors/handlers/app.error.handler.js";
 import {
 	createNoteSchema,
 	updateNoteSchema,
-} from "../validations/notes.validation";
-import { Note } from "../generated/prisma/client";
-import { NoteCreateInput, NoteUpdateInput } from "../generated/prisma/models";
+} from "../validations/notes.validation.js";
+import type { Note } from "../generated/prisma/client.js";
+import type {
+	NoteCreateInput,
+	NoteUpdateInput,
+} from "../generated/prisma/models.js";
 
 class NotesController {
 	getNotes = async (req: Request, res: Response, next: NextFunction) => {
@@ -25,12 +28,7 @@ class NotesController {
 				},
 				orderBy: { createdAt: "desc" },
 			});
-			if (!notes || notes.length === 0) {
-				return res
-					.status(404)
-					.send(responseBuilder(404, "No notes found", null));
-			}
-			return res.send(responseBuilder(200, "Success!", notes));
+			return res.send(responseBuilder(200, "Success!", notes ?? []));
 		} catch (error) {
 			appErrorHandler(error, next);
 		}

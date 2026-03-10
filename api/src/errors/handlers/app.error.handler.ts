@@ -1,9 +1,10 @@
-import { NextFunction } from "express";
-import AppError from "../app.error";
-import { Prisma } from "../../generated/prisma/client";
-import { $ZodIssue } from "zod/v4/core";
+import type { NextFunction } from "express";
+import AppError from "../app.error.js";
+import { Prisma } from "../../generated/prisma/client.js";
+import type { $ZodIssue } from "zod/v4/core";
 import { ZodError } from "zod/v4";
-import { JsonWebTokenError, TokenExpiredError } from "jsonwebtoken";
+import jwt from "jsonwebtoken";
+const { TokenExpiredError, JsonWebTokenError } = jwt;
 
 export const appErrorHandler = (error: Error | any, next: NextFunction) => {
 	if (error instanceof TokenExpiredError) {

@@ -1,13 +1,13 @@
-import { NextFunction, Request, Response } from "express";
-import { appErrorHandler } from "../errors/handlers/app.error.handler";
-import { prisma } from "../libs/prisma.client";
-import { comparePassword, hashPassword } from "../libs/bcrypt";
-import { generateJWT, verifyJWT } from "../libs/jwt";
-import { responseBuilder } from "../utils/response.builder";
-import { authSchema } from "../validations/auth.validation";
-import AppError from "../errors/app.error";
-import { cookieConfig } from "../config/app.config";
-import { User } from "../generated/prisma/client";
+import type { NextFunction, Request, Response } from "express";
+import { appErrorHandler } from "../errors/handlers/app.error.handler.js";
+import { prisma } from "../libs/prisma.client.js";
+import { comparePassword, hashPassword } from "../libs/bcrypt.js";
+import { generateJWT } from "../libs/jwt.js";
+import { responseBuilder } from "../utils/response.builder.js";
+import { authSchema } from "../validations/auth.validation.js";
+import AppError from "../errors/app.error.js";
+import { cookieConfig } from "../config/app.config.js";
+import type { User } from "../generated/prisma/client.js";
 
 class AuthController {
 	register = async (req: Request, res: Response, next: NextFunction) => {

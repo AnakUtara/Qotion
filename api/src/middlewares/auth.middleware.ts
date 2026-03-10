@@ -1,9 +1,9 @@
-import { NextFunction, Request, Response } from "express";
-import { prisma } from "../libs/prisma.client";
-import { appErrorHandler } from "../errors/handlers/app.error.handler";
-import { verifyJWT } from "../libs/jwt";
-import AppError from "../errors/app.error";
-import { User } from "../generated/prisma/client";
+import type { NextFunction, Request, Response } from "express";
+import { prisma } from "../libs/prisma.client.js";
+import { appErrorHandler } from "../errors/handlers/app.error.handler.js";
+import { verifyJWT } from "../libs/jwt.js";
+import AppError from "../errors/app.error.js";
+import type { User } from "../generated/prisma/client.js";
 
 export const uniqueUserGuard = async (
 	req: Request,

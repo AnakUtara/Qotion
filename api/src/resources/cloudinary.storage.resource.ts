@@ -1,7 +1,7 @@
 import express, { Router } from "express";
-import { verifyAccessToken } from "../middlewares/auth.middleware";
-import { imageUploader, fileUploader } from "../middlewares/express/multer";
-import cloudinaryStorageController from "../controllers/cloudinary.storage.controller";
+import { verifyAccessToken } from "../middlewares/auth.middleware.js";
+import { imageUploader, fileUploader } from "../middlewares/express/multer.js";
+import cloudinaryStorageController from "../controllers/cloudinary.storage.controller.js";
 
 export const cloudinaryStorageRouter: Router = express.Router();
 

@@ -1,6 +1,6 @@
-import { Request } from "express";
+import type { Request } from "express";
 import multer from "multer";
-import AppError from "../../errors/app.error";
+import AppError from "../../errors/app.error.js";
 
 const buildUploader = (acceptedMimeTypes: string[], maxFileSizeMB: number) => {
 	const fileFilter = (

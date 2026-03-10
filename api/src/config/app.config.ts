@@ -1,7 +1,9 @@
-import express, { Application, CookieOptions } from "express";
-import { appPort, clientOrigin, isProduction } from "./env.config";
+import express from "express";
+import type { Application, CookieOptions } from "express";
+import { appPort, isProduction } from "./env.config.js";
 import cors from "cors";
 import cookieParser from "cookie-parser";
+import corsOptions from "../middlewares/express/cors.js";
 
 const app: Application = express();
 const PORT = appPort;
@@ -11,12 +13,7 @@ app.set("trust proxy", 1); // Trust first proxy (if behind a reverse proxy like 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
-app.use(
-	cors({
-		origin: clientOrigin, // Next.js dev server
-		credentials: true, // if you need to send cookies
-	}),
-);
+app.use(cors(corsOptions));
 
 const cookieConfig: CookieOptions = {
 	httpOnly: true,

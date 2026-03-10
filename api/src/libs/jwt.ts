@@ -1,4 +1,5 @@
-import jwt, { SignOptions } from "jsonwebtoken";
+import jwt from "jsonwebtoken";
+import type { SignOptions } from "jsonwebtoken";
 
 const jwtSecret = process.env.JWT_SECRET;
 const jwtExpiresIn = process.env.JWT_EXPIRES_IN;
