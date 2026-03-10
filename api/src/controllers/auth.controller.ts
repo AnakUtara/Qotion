@@ -90,7 +90,7 @@ class AuthController {
 
 	logout = async (_req: Request, res: Response, next: NextFunction) => {
 		try {
-			res.clearCookie("refresh-token");
+			res.clearCookie("refresh-token", cookieConfig);
 			return res.send(responseBuilder(200, "Logout successful", null));
 		} catch (error: Error | any) {
 			appErrorHandler(error, next);
