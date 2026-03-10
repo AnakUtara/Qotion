@@ -3,13 +3,13 @@ import {
 	uniqueUserGuard,
 	verifyAccessToken,
 	verifyRefreshToken,
-} from "../middlewares/auth.middleware";
-import authController from "../controllers/auth.controller";
+} from "../middlewares/auth.middleware.js";
+import authController from "../controllers/auth.controller.js";
 import {
 	loginRateLimiter,
 	refreshTokenRateLimiter,
 	registerRateLimiter,
-} from "../middlewares/rate-limiter.middleware";
+} from "../middlewares/rate-limiter.middleware.js";
 
 export const authRouter: Router = express.Router();
 

@@ -29,7 +29,7 @@ import { toast } from "sonner";
 import { AxiosError } from "axios";
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-	const [searchTerm, setSearchTerm] = useState("");
+	const [searchTerm, setSearchTerm] = useState<string>("");
 
 	const debouncedSearchTerm = useDebounce(searchTerm, 300);
 
@@ -87,7 +87,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 				<SidebarSeparator />
 				{isLoading ? (
 					<Spinner />
-				) : data && data.length > 0 ? (
+				) : !error && data && data.length > 0 ? (
 					<SidebarGroup>
 						<SidebarGroupLabel>Your Notes</SidebarGroupLabel>
 						<SidebarGroupContent>

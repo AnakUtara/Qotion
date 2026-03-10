@@ -1,11 +1,11 @@
 import express, { Router } from "express";
-import notesController from "../controllers/notes.controller";
-import { verifyAccessToken } from "../middlewares/auth.middleware";
+import notesController from "../controllers/notes.controller.js";
+import { verifyAccessToken } from "../middlewares/auth.middleware.js";
 import {
 	noteCreationRateLimiter,
 	noteDeletionRateLimiter,
 	noteUpdateRateLimiter,
-} from "../middlewares/rate-limiter.middleware";
+} from "../middlewares/rate-limiter.middleware.js";
 
 export const notesRouter: Router = express.Router();
 
