@@ -12,5 +12,6 @@ apiRouter.get("/", (_, res) => res.send(`Welcome to the ${appName}`));
 apiRouter.use("/auth", authRouter);
 apiRouter.use("/notes", notesRouter);
 apiRouter.use("/cloudinary-storage", cloudinaryStorageRouter);
+apiRouter.use("/health", (_, res) => res.send("OK"));
 
 export default apiRouter;

@@ -5,6 +5,7 @@ const config: AxiosRequestConfig = {
 	headers: {
 		"Content-Type": "multipart/form-data",
 	},
+	timeout: 0,
 };
 
 export const uploadImage = async (file: File): Promise<string> => {
