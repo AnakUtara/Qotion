@@ -14,6 +14,7 @@ export const setAccessToken = (token: string | null) => {
 const defaultAxiosConfig: CreateAxiosDefaults = {
 	baseURL: import.meta.env.VITE_API_URL || "http://localhost:8000/api",
 	withCredentials: true, // Include cookies in requests
+	timeout: 15000, // 15s — prevents indefinite hang during Render cold starts
 	headers: {
 		"Content-Type": "application/json",
 	},
