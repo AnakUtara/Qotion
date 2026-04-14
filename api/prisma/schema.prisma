@@ -14,10 +14,13 @@ datasource db {
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
-  email     String   @unique
-  password  String
-  notes     Note[]
+  id       Int    @id @default(autoincrement())
+  email    String @unique
+  password String
+
+  notes         Note[]
+  refreshTokens RefreshToken[]
+
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
@@ -25,17 +28,30 @@ model User {
 }
 
 model Note {
-  id           Int      @id @default(autoincrement())
+  id           Int     @id @default(autoincrement())
   title        String
-  thumbnailUrl String?  @map("thumbnail_url")
+  thumbnailUrl String? @map("thumbnail_url")
   content      Json
-  authorId     Int      @map("author_id")
-  author       User     @relation(fields: [authorId], references: [id])
+
+  authorId Int  @map("author_id")
+  author   User @relation(fields: [authorId], references: [id])
+
   // categories PostCategory[]
-  createdAt    DateTime @default(now()) @map("created_at")
-  updatedAt    DateTime @updatedAt @map("updated_at")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
 
   @@map("notes")
+}
+
+model RefreshToken {
+  id        Int      @id @default(autoincrement())
+  token     String   @unique
+  userId    Int      @map("user_id")
+  user      User     @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("refresh_tokens")
 }
 
 // For future use, if we want to add categories to notes, we can use the following models:

@@ -7,6 +7,7 @@ import { setAccessToken } from "@/lib/axios/axios.config";
 import { login, logout, refreshToken, register } from "@/services/auth.service";
 import {
 	useEffect,
+	useRef,
 	useState,
 	type ComponentProps,
 	type ReactNode,
@@ -29,7 +30,11 @@ const AuthProvider = ({
 		await register(email, password);
 	};
 
+	const isRefreshing = useRef(false);
+
 	const persistUser = async () => {
+		if (isRefreshing.current) return;
+		isRefreshing.current = true;
 		setIsLoading(true);
 		try {
 			const res = await refreshToken();
@@ -41,6 +46,7 @@ const AuthProvider = ({
 			setAccessToken(null);
 		} finally {
 			setIsLoading(false);
+			isRefreshing.current = false;
 		}
 	};
 

@@ -6,7 +6,7 @@
 		"build": "npx prisma generate && npx tsc",
 		"start": "node dist/src/index.js",
 		"test": "echo \"Error: no test specified\" && exit 1",
-		"mgrt:dev": "npx prisma migrate dev",
+		"mig:dev": "npx prisma migrate dev",
 		"gen:dev": "npx prisma generate"
 	},
 	"keywords": [],

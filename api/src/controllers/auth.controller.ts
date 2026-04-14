@@ -52,6 +52,10 @@ class AuthController {
 				throw new AppError("Invalid email or password", 401);
 			}
 
+			await prisma.refreshToken.deleteMany({
+				where: { userId: existingUser.id },
+			});
+
 			const isPasswordValid = await comparePassword(
 				password,
 				existingUser.password,
@@ -77,6 +81,13 @@ class AuthController {
 				"refresh",
 			);
 
+			await prisma.refreshToken.create({
+				data: {
+					token: refreshToken,
+					userId: existingUser.id,
+				},
+			});
+
 			return res.cookie("refresh-token", refreshToken, cookieConfig).send(
 				responseBuilder(200, "Login successful", {
 					user,
@@ -88,8 +99,14 @@ class AuthController {
 		}
 	};
 
-	logout = async (_req: Request, res: Response, next: NextFunction) => {
+	logout = async (req: Request, res: Response, next: NextFunction) => {
 		try {
+			const refreshToken = req.cookies["refresh-token"];
+			if (refreshToken) {
+				await prisma.refreshToken.deleteMany({
+					where: { token: refreshToken },
+				});
+			}
 			res.clearCookie("refresh-token", cookieConfig);
 			return res.send(responseBuilder(200, "Logout successful", null));
 		} catch (error: Error | any) {
@@ -140,7 +157,19 @@ class AuthController {
 			const newAccessToken = generateJWT({ id, email });
 			const newRefreshToken = generateJWT({ id, email }, "refresh");
 
-			res.clearCookie("refresh-token");
+			console.log(
+				"old refresh token:",
+				req.cookies["refresh-token"],
+				"user id:",
+				id,
+			);
+
+			await prisma.refreshToken.update({
+				where: { token: req.cookies["refresh-token"], userId: id },
+				data: {
+					token: newRefreshToken,
+				},
+			});
 
 			return res.cookie("refresh-token", newRefreshToken, cookieConfig).send(
 				responseBuilder(200, "Token refreshed successfully", {
