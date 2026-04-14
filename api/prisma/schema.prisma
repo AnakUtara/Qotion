@@ -14,17 +14,29 @@ datasource db {
 }
 
 model User {
-  id       Int    @id @default(autoincrement())
-  email    String @unique
-  password String
+  id       Int     @id @default(autoincrement())
+  email    String  @unique
+  password String?
 
   notes         Note[]
   refreshTokens RefreshToken[]
+  accounts      Account[]
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
   @@map("users")
+}
+
+model Account {
+  id                Int    @id @default(autoincrement())
+  provider          String // e.g. "google"
+  providerAccountId String @map("provider_account_id")
+  userId            Int    @map("user_id")
+  user              User   @relation(fields: [userId], references: [id])
+
+  @@unique([provider, providerAccountId])
+  @@map("accounts")
 }
 
 model Note {

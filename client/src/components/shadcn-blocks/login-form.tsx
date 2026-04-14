@@ -16,9 +16,10 @@ import { Spinner } from "../shadcn-ui/spinner";
 import { useAuth } from "@/hooks/auth/use-auth";
 import { toast } from "sonner";
 import { AxiosError } from "axios";
+import { GoogleLogin } from "@react-oauth/google";
 
 export function LoginForm({ className, ...props }: ComponentProps<"form">) {
-	const { signIn } = useAuth();
+	const { signIn, signInWithGoogle } = useAuth();
 	const navigator = useNavigate();
 
 	const { control, handleSubmit, formState, reset } = useForm<AuthSchema>({
@@ -45,6 +46,17 @@ export function LoginForm({ className, ...props }: ComponentProps<"form">) {
 			);
 		} finally {
 			reset();
+		}
+	};
+
+	const handleGoogleSuccess = async (credentialResponse: { credential?: string }) => {
+		if (!credentialResponse.credential) return;
+		try {
+			await signInWithGoogle(credentialResponse.credential);
+			toast.success("Welcome! Logged in with Google!");
+			navigator("/notes");
+		} catch {
+			toast.error("Google login failed. Please try again.");
 		}
 	};
 
@@ -83,6 +95,12 @@ export function LoginForm({ className, ...props }: ComponentProps<"form">) {
 					</Button>
 				</Field>
 				<FieldSeparator>Or continue with</FieldSeparator>
+				<Field className="items-center">
+					<GoogleLogin
+						onSuccess={handleGoogleSuccess}
+						onError={() => toast.error("Google login failed. Please try again.")}
+					/>
+				</Field>
 				<Field>
 					<FieldDescription className="text-center">
 						Don&apos;t have an account?{" "}

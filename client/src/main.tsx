@@ -8,18 +8,22 @@ import RouterProvider from "./router/provider/router.provider.tsx";
 import AuthProvider from "./components/providers/auth.provider.tsx";
 import { Toaster } from "sonner";
 import { TooltipProvider } from "./components/shadcn-ui/tooltip.tsx";
+import { GoogleOAuthProvider } from "@react-oauth/google";
+import { GOOGLE_AUTH_CLIENT_ID } from "./config/app.config.tsx";
 
 createRoot(document.getElementById("root")!).render(
 	<StrictMode>
 		<HelmetProvider>
-			<AuthProvider>
-				<QueryClientProvider client={queryClient}>
-					<Toaster />
-					<TooltipProvider>
-						<RouterProvider />
-					</TooltipProvider>
-				</QueryClientProvider>
-			</AuthProvider>
+			<GoogleOAuthProvider clientId={GOOGLE_AUTH_CLIENT_ID}>
+				<AuthProvider>
+					<QueryClientProvider client={queryClient}>
+						<Toaster />
+						<TooltipProvider>
+							<RouterProvider />
+						</TooltipProvider>
+					</QueryClientProvider>
+				</AuthProvider>
+			</GoogleOAuthProvider>
 		</HelmetProvider>
 	</StrictMode>,
 );

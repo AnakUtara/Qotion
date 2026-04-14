@@ -8,6 +8,10 @@ import { authSchema } from "../validations/auth.validation.js";
 import AppError from "../errors/app.error.js";
 import { cookieConfig } from "../config/app.config.js";
 import type { User } from "../generated/prisma/client.js";
+import { OAuth2Client } from "google-auth-library";
+import { googleClientId } from "../config/env.config.js";
+
+const googleClient = new OAuth2Client(googleClientId);
 
 class AuthController {
 	register = async (req: Request, res: Response, next: NextFunction) => {
@@ -52,6 +56,10 @@ class AuthController {
 				throw new AppError("Invalid email or password", 401);
 			}
 
+			if (!existingUser.password) {
+				throw new AppError("Please sign in with Google", 401);
+			}
+
 			await prisma.refreshToken.deleteMany({
 				where: { userId: existingUser.id },
 			});
@@ -91,6 +99,71 @@ class AuthController {
 			return res.cookie("refresh-token", refreshToken, cookieConfig).send(
 				responseBuilder(200, "Login successful", {
 					user,
+					accessToken,
+				}),
+			);
+		} catch (error: Error | any) {
+			appErrorHandler(error, next);
+		}
+	};
+
+	googleLogin = async (req: Request, res: Response, next: NextFunction) => {
+		try {
+			const { idToken } = req.body;
+			if (!idToken) throw new AppError("Google ID token missing", 400);
+
+			const ticket = await googleClient.verifyIdToken({
+				idToken,
+				audience: googleClientId,
+			});
+
+			const payload = ticket.getPayload();
+			if (!payload?.email || !payload.sub) {
+				throw new AppError("Invalid Google token payload", 401);
+			}
+
+			const { email, sub: providerAccountId } = payload;
+
+			const user = await prisma.user.upsert({
+				where: { email },
+				create: { email },
+				update: {},
+			});
+
+			await prisma.account.upsert({
+				where: {
+					provider_providerAccountId: {
+						provider: "google",
+						providerAccountId,
+					},
+				},
+				create: {
+					provider: "google",
+					providerAccountId,
+					userId: user.id,
+				},
+				update: {},
+			});
+
+			await prisma.refreshToken.deleteMany({
+				where: { userId: user.id },
+			});
+
+			const accessToken = generateJWT({ id: user.id, email: user.email });
+			const refreshToken = generateJWT(
+				{ id: user.id, email: user.email },
+				"refresh",
+			);
+
+			await prisma.refreshToken.create({
+				data: { token: refreshToken, userId: user.id },
+			});
+
+			const { password: _p, ...safeUser } = user;
+
+			return res.cookie("refresh-token", refreshToken, cookieConfig).send(
+				responseBuilder(200, "Login successful", {
+					user: safeUser,
 					accessToken,
 				}),
 			);

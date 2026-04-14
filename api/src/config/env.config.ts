@@ -14,4 +14,25 @@ const isProduction = appEnv === "production";
 
 const clientOrigin = process.env.CLIENT_ORIGIN || "http://localhost:5173";
 
-export { appName, appPort, appEnv, databaseUrl, isProduction, clientOrigin };
+const googleClientId = process.env.GOOGLE_AUTH_CLIENT_ID || "";
+const googleClientSecret = process.env.GOOGLE_AUTH_CLIENT_SECRET || "";
+
+if (!googleClientId) {
+	console.warn("GOOGLE_AUTH_CLIENT_ID is not set. Google login will not work.");
+}
+
+if (!googleClientSecret) {
+	console.warn(
+		"GOOGLE_AUTH_CLIENT_SECRET is not set. Google login will not work.",
+	);
+}
+
+export {
+	appName,
+	appPort,
+	appEnv,
+	databaseUrl,
+	isProduction,
+	clientOrigin,
+	googleClientId,
+};

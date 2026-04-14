@@ -4,7 +4,13 @@ import {
 	type IUser,
 } from "@/context/auth.context";
 import { setAccessToken } from "@/lib/axios/axios.config";
-import { login, logout, refreshToken, register } from "@/services/auth.service";
+import {
+	googleLogin,
+	login,
+	logout,
+	refreshToken,
+	register,
+} from "@/services/auth.service";
 import {
 	useEffect,
 	useRef,
@@ -21,6 +27,13 @@ const AuthProvider = ({
 
 	const signIn = async (email: string, password: string) => {
 		const res = await login(email, password);
+		const { data }: { data: IAuthResponse } = res;
+		setUser(data.user);
+		setAccessToken(data.accessToken);
+	};
+
+	const signInWithGoogle = async (idToken: string) => {
+		const res = await googleLogin(idToken);
 		const { data }: { data: IAuthResponse } = res;
 		setUser(data.user);
 		setAccessToken(data.accessToken);
@@ -71,6 +84,7 @@ const AuthProvider = ({
 				user,
 				isLoading,
 				signIn,
+				signInWithGoogle,
 				signUp,
 				persistUser,
 				signOut,

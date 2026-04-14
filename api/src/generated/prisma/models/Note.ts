@@ -444,10 +444,6 @@ export type NoteUncheckedUpdateManyWithoutAuthorNestedInput = {
   deleteMany?: Prisma.NoteScalarWhereInput | Prisma.NoteScalarWhereInput[]
 }
 
-export type NullableStringFieldUpdateOperationsInput = {
-  set?: string | null
-}
-
 export type NoteCreateWithoutAuthorInput = {
   title: string
   thumbnailUrl?: string | null

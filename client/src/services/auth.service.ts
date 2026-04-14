@@ -8,6 +8,13 @@ export const login = async (email: string, password: string) => {
 	return res.data;
 };
 
+export const googleLogin = async (idToken: string) => {
+	const res = await staticAxiosInstance.post("/auth/google/callback", {
+		idToken,
+	});
+	return res.data;
+};
+
 export const register = async (email: string, password: string) => {
 	await staticAxiosInstance.post("/auth/register", { email, password });
 };

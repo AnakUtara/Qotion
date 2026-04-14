@@ -15,6 +15,7 @@ export const authRouter: Router = express.Router();
 
 // * Auth Resources
 authRouter.post("/login", loginRateLimiter, authController.login);
+authRouter.post("/google/callback", authController.googleLogin);
 authRouter.post(
 	"/register",
 	registerRateLimiter,

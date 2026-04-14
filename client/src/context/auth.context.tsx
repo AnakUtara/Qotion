@@ -14,6 +14,7 @@ export interface AuthContextProps {
 	user: IUser | null;
 	isLoading: boolean;
 	signIn: (email: string, password: string) => Promise<void>;
+	signInWithGoogle: (idToken: string) => Promise<void>;
 	signUp: (email: string, password: string) => Promise<void>;
 	persistUser: () => Promise<void>;
 	signOut: () => void;
